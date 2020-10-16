@@ -96,22 +96,22 @@ disqusShortname = ""
       url = "blogs/covid"
 
     [[params.tiles.showcase]]
-      title = "Tempus"
+      title = "Climate change and temperature anomalies"
       subtitle = "Feugiat Amet Tempus"
       image = "pic02.jpg"
-      url = "blogs/climatechange"
-
-    [[params.tiles.showcase]]
-      title = "Magna"
-      subtitle = "Lorem Etiam Nullam"
-      image = "pic03.jpg"
-      url = "blogs/brexit"
+      url = "blogs/climate"
 
     [[params.tiles.showcase]]
       title = "Ipsum"
       subtitle = "Nisl Sed Aliquam"
       image = "pic04.jpg"
-      url = "blogs/omega"
+      url = "blogs/recession"
+      
+    [[params.tiles.showcase]]
+      title = "Brexit"
+      subtitle = "Lorem Etiam Nullam"
+      image = "pic03.jpg"
+      url = "blogs/brexit"
 
     [[params.tiles.showcase]]
       title = "Consequat"

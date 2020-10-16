@@ -1,0 +1,88 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: gapminder 
+draft: false
+image: pic99.jpg
+keywords: ""
+slug: gapminder
+title: gapminder
+---
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+library(infer)
+```
+
+# Gapminder revisited
+
+Recall the `gapminder` data frame from the gapminder package. That data frame contains just six columns from the larger [data in Gapminder World](https://www.gapminder.org/data/). In this part, you will join a few dataframes with more data than the 'gapminder' package. Specifically, you will look at data on 
+
+
+- Life expectancy at birth (life_expectancy_years.csv)
+- GDP per capita in constant 2010 US$ (https://data.worldbank.org/indicator/NY.GDP.PCAP.KD)
+- Female fertility: The number of babies per woman (https://data.worldbank.org/indicator/SP.DYN.TFRT.IN)
+- Primary school enrollment as % of children attending primary school (https://data.worldbank.org/indicator/SE.PRM.NENR)
+- Mortality rate, for under 5, per 1000 live births (https://data.worldbank.org/indicator/SH.DYN.MORT)
+- HIV prevalence (adults_with_hiv_percent_age_15_49.csv): The estimated number of people living with HIV per 100 population of age group 15-49.
+
+You must use the `wbstats` package to download data from the World Bank. The relevant World Bank indicators are `SP.DYN.TFRT.IN`, `SE.PRM.NENR`, `NY.GDP.PCAP.KD`, and `SH.DYN.MORT`
+
+```{r, get_data, cache=TRUE}
+
+# load gapminder HIV data
+hiv <- read_csv(here::here("data","adults_with_hiv_percent_age_15_49.csv"))
+life_expectancy <- read_csv(here::here("data","life_expectancy_years.csv"))
+
+# get World bank data using wbstats
+indicators <- c("SP.DYN.TFRT.IN","SE.PRM.NENR", "SH.DYN.MORT", "NY.GDP.PCAP.KD")
+
+
+library(wbstats)
+
+worldbank_data <- wb_data(country="countries_only", #countries only- no aggregates like Latin America, Europe, etc.
+                          indicator = indicators, 
+                          start_date = 1960, 
+                          end_date = 2016)
+
+# get a dataframe of information regarding countries, indicators, sources, regions, indicator topics, lending types, income levels,  from the World Bank API 
+countries <-  wbstats::wb_cachelist$countries
+
+```
+
+You have to join the 3 dataframes (life_expectancy, worldbank_data, and HIV) into one. You may need to tidy your data first and then perform [join operations](http://r4ds.had.co.nz/relational-data.html). Think about what type makes the most sense **and explain why you chose it**.
+
+1. What is the relationship between HIV prevalence and life expectancy? Generate a scatterplot with a smoothing line to report your results. You may find faceting useful
+1. What is the relationship between fertility rate and GDP per capita? Generate a scatterplot with a smoothing line to report your results. You may find facetting by region useful
+1. Which regions have the most observations with missing HIV data? Generate a bar chart (`geom_col()`), in descending order.
+1. How has mortality rate for under 5 changed by region? In each region, find the top 5 countries that have seen the greatest improvement, as well as those 5 countries where mortality rates have had the least improvement or even deterioration.
+1. Is there a relationship between primary school enrollment and fertility rate?
