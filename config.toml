@@ -138,7 +138,6 @@ disqusShortname = ""
     enable = true
     title = "Welcome to my Data Analytics Portfolio Website"
     subtitle = """For the past month I have been xxxx""" 
-    Data experience XXXX.
     buttonText = "Get Started"
     url = "blogs"
 
