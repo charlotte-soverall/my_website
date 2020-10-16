@@ -23,6 +23,7 @@ library(httr)
 library(readxl)
 library(vroom)
 library(infer)
+library(here)
 ```
 
 # Gapminder revisited
