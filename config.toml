@@ -84,7 +84,6 @@ disqusShortname = ""
     title = "Hi, my name is Charlotte"
     subtitle = "This is my portfolio website"
     buttonText = "Get Started"
-blogdown::serve_site()
 
   # Tiles Section
   [params.tiles]
@@ -92,10 +91,10 @@ blogdown::serve_site()
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Aliquam"
-      subtitle = "Ipsum Dolor Sit Amet"
+      title = "Youth Risk Behavior Surveillance"
+      subtitle = "Youth Risk Behavior Surveillance"
       image = "pic01.jpg"
-      url = "blogs/aliquam"
+      url = "blogs/blog5"
 
     [[params.tiles.showcase]]
       title = "Tempus"
@@ -172,47 +171,47 @@ blogdown::serve_site()
     # by copying the corresponding map with frontmatter code.
     [[params.contact.email]]
     title = "Email"
-    email = "example@domain.com"
+    email = "csoverall.mfa2021@london.edu"
 
-    [[params.contact.phone]]
-    title = "Phone"
-    phone = "(000) 000-0000 x1234"
+   #[[params.contact.phone]]
+  #title = "Phone"
+    #phone = "(000) 000-0000 x1234"
 
-    [[params.contact.address]]
-    title = "Address"
-    street = "Street"
-    city = "City, ST 00000"
-    country = "Country"
+    #[[params.contact.address]]
+    #title = "Address"
+    #street = "Street"
+   #city = "City, ST 00000"
+   # country = "Country"
 
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "Charlotte"
 
     # Uses font awesome icons
-    [[params.footer.social]]
-      icon = "fa-twitter"
-      url= "https://www.twitter.com"
-      label = "Twitter"
+    #[[params.footer.social]]
+     # icon = "fa-twitter"
+      #url= "https://www.twitter.com"
+      #label = "Twitter"
 
-    [[params.footer.social]]
-      icon = "fa-facebook"
-      url= "https://www.facebook.com"
-      label = "Facebook"
+    #[[params.footer.social]]
+      #icon = "fa-facebook"
+      #url= "https://www.facebook.com"
+      #label = "Facebook"
 
-    [[params.footer.social]]
-      icon = "fa-instagram"
-      url= "https://www.instagram.com"
-      label = "Instagram"
+    #[[params.footer.social]]
+      #icon = "fa-instagram"
+      #url= "https://www.instagram.com"
+      #label = "Instagram"
     
     [[params.footer.social]]
       icon = "fa-github"
-      url= "https://www.github.com"
+      url= "https://www.github.com/charlotte-soverall/"
       label = "GitHub"
 
     [[params.footer.social]]
       icon = "fa-linkedin"
-      url= "https://www.linkedin.com"
+      url= "https://www.linkedin.com/in/charlottesoverall/"
       label = "LinkedIn"
 
     [[params.footer.quicklinks]]
