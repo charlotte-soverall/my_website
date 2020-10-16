@@ -3,12 +3,12 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:42:51-05:00"
-description: Climate change and temperature anomalies 
+description: This data has been provided by NASA's Goddard Institute for Space Studies
 draft: false
-image: pic99.jpg
+image: pic08.jpg
 keywords: ""
 slug: climate
-title: CDC Covid-19 Case Surveillance
+title: Climate change and temperature anomalies
 ---
 
 ```{r, setup, include=FALSE}

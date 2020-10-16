@@ -5,7 +5,7 @@ categories:
 date: "2017-10-31T22:42:51-05:00"
 description: gapminder 
 draft: false
-image: pic99.jpg
+image: pic09.jpg
 keywords: ""
 slug: gapminder
 title: gapminder
