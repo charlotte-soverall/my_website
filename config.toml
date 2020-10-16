@@ -52,12 +52,12 @@ disqusShortname = ""
       url = "blogs"
 
     [[params.navigation.links]]
-      name = "Generic Blog"
+      name = "About Me"
       url = "blogs/ipsum"
 
-    [[params.navigation.links]]
-      name = "Elements"
-      url = "elements.html"
+    #[[params.navigation.links]]
+      #name = "Elements"
+      #url = "elements.html"
 
     # Add custom links here by uncommenting code below. To remove links just delete
     # the [[params.navigation.links]] map associated with that link. Copy and paste
@@ -72,10 +72,9 @@ disqusShortname = ""
       url = "blogs"
 
     # Button Style 2
-    [[params.navigation.button2]]
-      name = "Log In"
-      url = "#"
-
+    #[[params.navigation.button2]]
+     # name = "Log In"
+      #url = "#"
 
   # Banner section
   [params.banner]
@@ -203,18 +202,18 @@ disqusShortname = ""
       #icon = "fa-instagram"
       #url= "https://www.instagram.com"
       #label = "Instagram"
-    
+      
+    [[params.footer.social]]
+      icon = "fa-linkedin"
+      url= "https://www.linkedin.com/in/charlottesoverall/"
+      label = "LinkedIn"   
+      
     [[params.footer.social]]
       icon = "fa-github"
       url= "https://www.github.com/charlotte-soverall/"
       label = "GitHub"
 
-    [[params.footer.social]]
-      icon = "fa-linkedin"
-      url= "https://www.linkedin.com/in/charlottesoverall/"
-      label = "LinkedIn"
-
-    [[params.footer.quicklinks]]
-      text = "Design: "
-      url= "https://www.html5up.net"
-      alt = "HTML5 UP"
+    #[[params.footer.quicklinks]]
+      #text = "Design: "
+      #url= "https://www.html5up.net"
+      #alt = "HTML5 UP"

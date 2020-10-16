@@ -144,7 +144,7 @@ yrbss %&gt;%
     geom_boxplot()+
     labs(title=&quot;Distribution of weights by gender&quot;,
          y=NULL)</code></pre>
-<p><img src="/blogs/blog5_files/figure-html/eda_on_weight-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/covid_files/figure-html/eda_on_weight-1.png" width="648" style="display: block; margin: auto;" /></p>
 <p>Next, consider the possible relationship between a high schooler’s weight and their physical activity. Plotting the data is a useful first step because it helps us quickly visualize trends, identify strong associations, and develop research questions.</p>
 <p>Let’s create a new variable <code>physical_3plus</code>, which will be <code>yes</code> if they are physically active for at least 3 days a week, and <code>no</code> otherwise.</p>
 <pre class="r"><code># Create a new variable `physical_3plus` equal to `yes` if they are phycially active for at least 3 days a week, and `no` otherwise
@@ -190,7 +190,7 @@ yrbss %&gt;% filter(!is.na(physical_3plus)) %&gt;%
          y=&quot;Physically active three or more days per week?&quot;,
          x=&quot;Distribution of weight&quot;)+
     theme_bw()</code></pre>
-<p><img src="/blogs/blog5_files/figure-html/boxplot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/covid_files/figure-html/boxplot-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="confidence-interval" class="section level2">
 <h2>Confidence Interval</h2>
@@ -249,12 +249,12 @@ yrbss %&gt;% filter(!is.na(physical_3plus)) %&gt;%
 <p>We can visualize this null distribution with the following code:</p>
 <pre class="r"><code>ggplot(data = null_dist, aes(x = stat)) +
   geom_histogram()</code></pre>
-<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/covid_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /></p>
 <p>Now that the test is initialized and the null distribution formed, we can visualise to see how many of these null permutations have a difference of at least <code>obs_stat</code> of 1.77?</p>
 <p>We can also calculate the p-value for your hypothesis test using the function <code>infer::get_p_value()</code>.</p>
 <pre class="r"><code>null_dist %&gt;% visualize() +
   shade_p_value(obs_stat = obs_diff, direction = &quot;two-sided&quot;)</code></pre>
-<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-9-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/covid_files/figure-html/unnamed-chunk-9-1.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>null_dist %&gt;%
   get_p_value(obs_stat = obs_diff, direction = &quot;two_sided&quot;)</code></pre>
 <pre><code>## # A tibble: 1 x 1
