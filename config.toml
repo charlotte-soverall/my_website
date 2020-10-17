@@ -81,7 +81,7 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Charlotte"
-    subtitle = "This is my data analystics portfolio website"
+    subtitle = "This is my data analytics portfolio website"
     buttonText = "Get Started"
 
   # Tiles Section
@@ -102,14 +102,14 @@ disqusShortname = ""
       url = "blogs/climate"
 
     [[params.tiles.showcase]]
-      title = "Can yeild curve inversion actually predict recessions? "
+      title = "Can yield curve inversion actually predict recessions? "
       subtitle = "Let's use data analysis to find out!"
       image = "pic04.jpg"
       url = "blogs/recession"
       
     [[params.tiles.showcase]]
       title = "Gapminder"
-      subtitle = "A treasure of world statistics"
+      subtitle = "A treasure of world statistics" 
       image = "pic03.jpg"
       url = "blogs/gapminder"
 

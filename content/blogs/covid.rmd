@@ -42,7 +42,7 @@ library(vroom)
 library(infer)
 ```
 
-Looking at the  [CDC Covid-19 Case Surveillance Data](https://data.cdc.gov/Case-Surveillance/COVID-19-Case-Surveillance-Public-Use-Data/vbim-akqf). There are well over 3 million entries of individual, de-identified patient data. Since this is a large file, I used `vroom` to load it and you keep `cache=TRUE` in the chunk options.
+his data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used `vroom` to load it and kekt `cache=TRUE` in the chunk options.
 
 ```{r, cache=TRUE}
 # file contains 11 variables and 3.66m rows and is well over 380Mb. 
@@ -57,12 +57,15 @@ covid_data <- vroom::vroom(url)%>% # If vroom::vroom(url) doesn't work, use read
 
 ```
 
-Given the data we have, I produce two graphs that show death % rate:
+Given the data, I have produce two graphs that show death % rate:
 
 1. by age group, sex, and whether the patient had co-morbidities or not
 2. by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not.
 
 
 ```{r covid_challenge, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "covid_death_rate_comorbidities.png"), error = FALSE)
-knitr::include_graphics(here::here("images", "covid_death_rate_icu.png"), error = FALSE)
+image: ![% of deaths by age group, sex, and whether the patient had co-morbidities or not](data/covid_death_rate_comorbidities.png) 
+image: ![% of deaths by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not](data/covid_death_rate_icu.png) 
+
+#knitr::include_graphics(here::here("data", "covid_death_rate_comorbidities.png"), error = FALSE)
+#knitr::include_graphics(here::here("data", "covid_death_rate_icu.png"), error = FALSE)
