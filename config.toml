@@ -112,11 +112,17 @@ disqusShortname = ""
       subtitle = "A treasure of world statistics" 
       image = "pic03.jpg"
       url = "blogs/gapminder"
+      
+    [[params.tiles.showcase]]
+      title = "Brexit"
+      subtitle = "Looking at the 2016 Brexit vote" 
+      image = "pic05.jpg"
+      url = "blogs/brexit"
 
     [[params.tiles.showcase]]
-      title = "Consequat"
-      subtitle = "Ipsum Dolor Sit Amet"
-      image = "pic05.jpg"
+      title = "About me"
+      subtitle = "Getting to know me"
+      image = "pic06.jpg"
       url = "blogs/aboutme"
 
     #[[params.tiles.showcase]]
@@ -137,7 +143,7 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "Welcome to my Data Analytics Portfolio Website"
-    subtitle = """For the past month I have been xxxx""" 
+    subtitle = """Data Analytics is my first course at London Business School and it is also my first time coding. This course has three main components data science, statistical inference, and data modelling. In one month, I have learnt how to use R/R studio to learn from data. I have useful technical skills of data importing, data filtering and manipulation, visualization, inferential statistics, and data modelling. Data analytics is a complex and powerful tool. It can add value to many areas of business, and using the appropriate types of analyses, it can create simple but effective models that facilitate the communication of one’s reasoning and decision-making process. " 
     buttonText = "Get Started"
     url = "blogs"
 

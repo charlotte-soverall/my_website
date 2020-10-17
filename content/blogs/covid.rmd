@@ -42,7 +42,7 @@ library(vroom)
 library(infer)
 ```
 
-his data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used `vroom` to load it and kekt `cache=TRUE` in the chunk options.
+This data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used `vroom` to load it and kekt `cache=TRUE` in the chunk options.
 
 ```{r, cache=TRUE}
 # file contains 11 variables and 3.66m rows and is well over 380Mb. 
