@@ -8,7 +8,7 @@ draft: false
 image: pic1.jpg
 keywords: ""
 slug: brexit
-title: With 'Deal or no deal' question on everyone's minds let's have a look at the 2016 voting data
+title: With Deal or No Deal question on everyones minds let us have a look at the 2016 voting data
 ---
 
 ```{r, setup, include=FALSE}
@@ -27,12 +27,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
 library(tidyverse)  
 library(gapminder)  
 library(here)
-library(knitr)
 ```
 
 # Brexit voting
@@ -81,4 +79,4 @@ ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
 
 > Type your answer after, and outside, this blockquote.
 
-Research shows that constituencies with lower levels of immigration voted for Brexit. This is line with our finding in the correlation matrix and scatterplot showing that the relationship between ‘leave share’ and ‘born in the UK’ is almost positively corelated. As the proportion of native-born residents in a constituency increase, i.e the proportion of immigrants decrease, so does the proportion of those who votes for Brexit. When analysing the Labour Force Survey data and research by Ralph Fevre, data showed that on average leading ‘leave share’ constituencies have higher unemployment, lower portion of labour force in skilled labour positions and lower median earning. Therefore, although ‘one common explanation for the Brexit outcome was fear of immigration’, which could be due to limited exposure to immigrants, there could also an additional explanation. The socio-economic characteristics of the ‘leave share’ votes show that deprivation and scapegoating personal circumstances on immigrants may be another reason for the correlation.
+Research shows that constituencies with lower levels of immigration voted for Brexit. This is line with our finding in the correlation matrix and scatterplot showing that the relationship between ‘leave share’ and ‘born in the UK’ is almost positively correlated. As the proportion of native-born residents in a constituency increase, i.e the proportion of immigrants decrease, so does the proportion of those who votes for Brexit. When analysing the Labour Force Survey data and research by Ralph Fevre, data showed that on average leading ‘leave share’ constituencies have higher unemployment, lower portion of labour force in skilled labour positions and lower median earning. Therefore, although ‘one common explanation for the Brexit outcome was fear of immigration’, which could be due to limited exposure to immigrants, there could also an additional explanation. The socio-economic characteristics of the ‘leave share’ votes show that deprivation and scapegoating personal circumstances on immigrants may be another reason for the correlation.
