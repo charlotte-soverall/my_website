@@ -14,7 +14,7 @@ title: CDC Covid-19 Case Surveillance
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>his data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used <code>vroom</code> to load it and kekt <code>cache=TRUE</code> in the chunk options.</p>
+<p>This data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used <code>vroom</code> to load it and kekt <code>cache=TRUE</code> in the chunk options.</p>
 <pre class="r"><code># file contains 11 variables and 3.66m rows and is well over 380Mb. 
 # It will take time to download
 
@@ -28,4 +28,4 @@ covid_data &lt;- vroom::vroom(url)%&gt;% # If vroom::vroom(url) doesn&#39;t work
 <li>by age group, sex, and whether the patient had co-morbidities or not</li>
 <li>by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not.</li>
 </ol>
-<p><img src="/Users/charlotte/Desktop/LBS/Data%20Analytics/my_website/data/covid_death_rate_comorbidities.png" width="100%" style="display: block; margin: auto;" /><img src="/Users/charlotte/Desktop/LBS/Data%20Analytics/my_website/data/covid_death_rate_icu.png" width="100%" style="display: block; margin: auto;" /></p>
+<p><img src="/Users/charlotte/Desktop/LBS/Data Analytics/my_website/covid_death_rate_comorbidities.png" width="100%" style="display: block; margin: auto;" /><img src="/Users/charlotte/Desktop/LBS/Data Analytics/my_website/covid_death_rate_icu.png" width="100%" style="display: block; margin: auto;" /></p>
