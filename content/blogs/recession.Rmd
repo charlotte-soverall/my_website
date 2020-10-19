@@ -53,13 +53,13 @@ In addition, many articles and commentators think that, e.g., [*Yield curve inve
 
 
 ```{r yield_curve_parable.jpg, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve_parable.jpg"), error = FALSE)
+knitr::include_graphics(here::here("blogs","yield_curve_parable.jpg"), error = FALSE)
 ```
 
 In this case I will look at US data and use the [FRED database](https://fred.stlouisfed.org/) to download historical yield curve rates, and plot the yield curves since 1999 to see when the yield curves flatten. If you want to know more, a very nice article that explains the [yield curve is and its inversion can be found here](https://fredblog.stlouisfed.org/2018/10/the-data-behind-the-fear-of-yield-curve-inversions/). At the end of this challenge I have produced this chart
 
 ```{r yield_curve_challenge, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve_challenge.png"), error = FALSE)
+knitr::include_graphics(here::here("blogs","yield_curve_challenge.png"), error = FALSE)
 ```
 
 
