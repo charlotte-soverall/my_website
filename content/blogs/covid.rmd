@@ -67,8 +67,8 @@ Given the data, I have produce two graphs that show death % rate:
 #image: ![% of deaths by age group, sex, and whether the patient had co-morbidities or not](static/data/covid_death_rate_comorbidities.png) 
 #image: ![% of deaths by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not](static/data/covid_death_rate_icu.png) 
 
-knitr::include_graphics("/img/covid_death_rate_comorbidities.png"), error = FALSE)
-knitr::include_graphics("/img/covid_death_rate_icu.png"), error = FALSE)
+knitr::include_graphics("/static/img/blogs/covid_death_rate_comorbidities.png"), error = FALSE)
+knitr::include_graphics("/static/img/blogs/covid_death_rate_icu.png"), error = FALSE)
 
 #knitr::include_graphics(here::here("static","data","covid_death_rate_comorbidities.png"), error = FALSE)
 #knitr::include_graphics(here::here("static","data","covid_death_rate_icu.png"), error = FALSE)
