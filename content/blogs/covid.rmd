@@ -40,6 +40,7 @@ library(httr)
 library(readxl)
 library(vroom)
 library(infer)
+library(knitr)
 ```
 
 This data has been provided by the CDC Case Surveillance Task Force and last updated on 30 September 2020. In this dataset there are well over 3 million entries of individual, de-identified patient data. As this is a large file, I used `vroom` to load it and kekt `cache=TRUE` in the chunk options.
@@ -62,16 +63,17 @@ Given the data, I have produce two graphs that show death % rate:
 1. by age group, sex, and whether the patient had co-morbidities or not
 2. by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not.
 
-
 ```{r covid_challenge, echo=FALSE, out.width="100%"}
 #image: ![% of deaths by age group, sex, and whether the patient had co-morbidities or not](static/data/covid_death_rate_comorbidities.png) 
-#image: ![% of deaths by age group, sex, and whether the patient was admited to Intensive Care Unit (ICU) or not](static/data/covid_death_rate_icu.png) 
+#image: ![% of deaths by age group, sex, and whether the patient was admitted to Intensive Care Unit (ICU) or not](static/data/covid_death_rate_icu.png) 
 
-knitr::include_graphics("/static/img/blogs/covid_death_rate_comorbidities.png"), error = FALSE)
-knitr::include_graphics("/static/img/blogs/covid_death_rate_icu.png"), error = FALSE)
+#knitr::include_graphics("img/covid_death_rate_comorbidities.png"), error = FALSE)
+#knitr::include_graphics("img/covid_death_rate_icu.png"), error = FALSE)
 
-#knitr::include_graphics(here::here("static","data","covid_death_rate_comorbidities.png"), error = FALSE)
-#knitr::include_graphics(here::here("static","data","covid_death_rate_icu.png"), error = FALSE)
+knitr::include_graphics(here::here("static","img","covid_death_rate_comorbidities.png"), error = FALSE)
+knitr::include_graphics(here::here("static","img","covid_death_rate_icu.png"), error = FALSE)
 
 #knitr::include_graphics("covid_death_rate_comorbidities.png"), error = FALSE)
 #knitr::include_graphics("covid_death_rate_icu.png"), error = FALSE)
+```
+
