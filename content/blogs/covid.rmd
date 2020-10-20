@@ -70,8 +70,9 @@ Given the data, I have produce two graphs that show death % rate:
 #knitr::include_graphics("img","covid_death_rate_comorbidities.png"), error = FALSE)
 #knitr::include_graphics("img","covid_death_rate_icu.png"), error = FALSE)
 
-knitr::include_graphics(here::here("covid_death_rate_comorbidities.jgp"), error = FALSE)
-knitr::include_graphics(here::here("covid_death_rate_icu.png"), error = FALSE)
+knitr::include_graphics(here::here("static","img","blogs","covid_death_rate_comorbidities.jgp"), error = FALSE)
+
+#knitr::include_graphics(here::here("covid_death_rate_icu.png"), error = FALSE)
 
 #knitr::include_graphics("covid_death_rate_comorbidities.png"), error = FALSE)
 #knitr::include_graphics("covid_death_rate_icu.png"), error = FALSE)
