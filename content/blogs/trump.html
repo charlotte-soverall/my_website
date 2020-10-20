@@ -1,0 +1,140 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Trump's Approval Margins
+draft: false
+image: pic06.jpg
+keywords: ""
+slug: trump
+title: Trump's Approval Margins
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code># Import approval polls data
+approval_polllist &lt;- read_csv(here::here(&#39;data&#39;, &#39;approval_polllist.csv&#39;))
+
+# or directly off fivethirtyeight website
+# approval_polllist &lt;- read_csv(&#39;https://projects.fivethirtyeight.com/trump-approval-data/approval_polllist.csv&#39;) 
+
+glimpse(approval_polllist)</code></pre>
+<pre><code>## Rows: 15,619
+## Columns: 22
+## $ president           &lt;chr&gt; &quot;Donald Trump&quot;, &quot;Donald Trump&quot;, &quot;Donald Trump&quot;, &quot;…
+## $ subgroup            &lt;chr&gt; &quot;All polls&quot;, &quot;All polls&quot;, &quot;All polls&quot;, &quot;All polls…
+## $ modeldate           &lt;chr&gt; &quot;9/27/2020&quot;, &quot;9/27/2020&quot;, &quot;9/27/2020&quot;, &quot;9/27/2020…
+## $ startdate           &lt;chr&gt; &quot;1/20/2017&quot;, &quot;1/20/2017&quot;, &quot;1/20/2017&quot;, &quot;1/21/2017…
+## $ enddate             &lt;chr&gt; &quot;1/22/2017&quot;, &quot;1/22/2017&quot;, &quot;1/24/2017&quot;, &quot;1/23/2017…
+## $ pollster            &lt;chr&gt; &quot;Gallup&quot;, &quot;Morning Consult&quot;, &quot;Ipsos&quot;, &quot;Gallup&quot;, &quot;…
+## $ grade               &lt;chr&gt; &quot;B&quot;, &quot;B/C&quot;, &quot;B-&quot;, &quot;B&quot;, &quot;B-&quot;, &quot;C+&quot;, &quot;B+&quot;, &quot;B&quot;, &quot;C+…
+## $ samplesize          &lt;dbl&gt; 1500, 1992, 1632, 1500, 1651, 1500, 1190, 1500, 1…
+## $ population          &lt;chr&gt; &quot;a&quot;, &quot;rv&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;lv&quot;, &quot;rv&quot;, &quot;a&quot;, &quot;lv&quot;, …
+## $ weight              &lt;dbl&gt; 0.262, 0.680, 0.153, 0.243, 0.142, 0.200, 1.514, …
+## $ influence           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ approve             &lt;dbl&gt; 45.0, 46.0, 42.1, 45.0, 42.3, 57.0, 36.0, 46.0, 5…
+## $ disapprove          &lt;dbl&gt; 45.0, 37.0, 45.2, 46.0, 45.8, 43.0, 44.0, 45.0, 4…
+## $ adjusted_approve    &lt;dbl&gt; 45.7, 45.3, 43.2, 45.7, 43.4, 51.5, 37.6, 46.7, 5…
+## $ adjusted_disapprove &lt;dbl&gt; 43.6, 38.3, 43.9, 44.6, 44.5, 44.5, 42.8, 43.6, 4…
+## $ multiversions       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ tracking            &lt;lgl&gt; TRUE, NA, TRUE, TRUE, TRUE, TRUE, NA, TRUE, TRUE,…
+## $ url                 &lt;chr&gt; &quot;http://www.gallup.com/poll/201617/gallup-daily-t…
+## $ poll_id             &lt;dbl&gt; 49253, 49249, 49426, 49262, 49425, 49266, 49260, …
+## $ question_id         &lt;dbl&gt; 77265, 77261, 77599, 77274, 77598, 77278, 77272, …
+## $ createddate         &lt;chr&gt; &quot;1/23/2017&quot;, &quot;1/23/2017&quot;, &quot;3/1/2017&quot;, &quot;1/24/2017&quot;…
+## $ timestamp           &lt;chr&gt; &quot;00:45:20 27 Sep 2020&quot;, &quot;00:45:20 27 Sep 2020&quot;, &quot;…</code></pre>
+<pre class="r"><code># Use `lubridate` to fix dates, as they are given as characters.</code></pre>
+<p><img src="/Users/charlotte/Desktop/LBS/Data Analytics/my_website/images/trump_approval_margin.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Clean up data just for pollster and results
+tidypolls &lt;- approval_polllist %&gt;%
+  select(enddate,pollster, approve, disapprove) %&gt;%
+  mutate(NAR = approve - disapprove)
+tidypolls</code></pre>
+<pre><code>## # A tibble: 15,619 x 5
+##    enddate   pollster                                 approve disapprove   NAR
+##    &lt;chr&gt;     &lt;chr&gt;                                      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+##  1 1/22/2017 Gallup                                      45         45     0  
+##  2 1/22/2017 Morning Consult                             46         37     9  
+##  3 1/24/2017 Ipsos                                       42.1       45.2  -3.1
+##  4 1/23/2017 Gallup                                      45         46    -1  
+##  5 1/25/2017 Ipsos                                       42.3       45.8  -3.5
+##  6 1/24/2017 Rasmussen Reports/Pulse Opinion Research    57         43    14  
+##  7 1/25/2017 Quinnipiac University                       36         44    -8  
+##  8 1/24/2017 Gallup                                      46         45     1  
+##  9 1/25/2017 Rasmussen Reports/Pulse Opinion Research    59         41    18  
+## 10 1/25/2017 Gallup                                      46         45     1  
+## # … with 15,609 more rows</code></pre>
+<pre class="r"><code># group per date to calculare average Net Approval Rating
+tidypolls_summary &lt;- tidypolls %&gt;%na.omit() %&gt;%
+  group_by(week_number = week(mdy(enddate)), year=year(mdy(enddate))) %&gt;%
+  summarise(count = n(), average_approve = mean(approve), average_disapprove = mean(disapprove), average_NAR = average_approve - average_disapprove, sd_NAR = sd(NAR), se=sd_NAR/sqrt(count),CI_95=average_NAR+1.96*se,CI_5=average_NAR-1.96*se)
+tidypolls_summary</code></pre>
+<pre><code>## # A tibble: 195 x 10
+## # Groups:   week_number [53]
+##    week_number  year count average_approve average_disappr… average_NAR sd_NAR
+##          &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;           &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+##  1           1  2018    62            41.3             53.5     -12.2     3.23
+##  2           1  2019    74            42.8             53.6     -10.8     4.11
+##  3           1  2020    52            42.8             52.2      -9.44    3.75
+##  4           2  2018    78            41.1             53.9     -12.8     4.06
+##  5           2  2019   101            41.9             54.6     -12.6     3.56
+##  6           2  2020    76            42.6             52.6      -9.99    4.17
+##  7           3  2018   102            40.2             55.2     -15.0     5.63
+##  8           3  2019   105            41.2             55.5     -14.3     3.36
+##  9           3  2020    81            43.0             52.6      -9.65    5.31
+## 10           4  2017    46            45.5             44.6       0.943   6.96
+## # … with 185 more rows, and 3 more variables: se &lt;dbl&gt;, CI_95 &lt;dbl&gt;, CI_5 &lt;dbl&gt;</code></pre>
+<pre class="r"><code>tidypolls_summary$average_NAR</code></pre>
+<pre><code>##   [1] -12.151 -10.807  -9.442 -12.813 -12.630  -9.987 -14.994 -14.308  -9.654
+##  [10]   0.943 -14.899 -14.153  -9.116  -1.699 -10.909 -13.715  -8.777  -3.486
+##  [19] -10.182 -11.405  -7.718  -6.138 -11.690  -9.789  -6.991  -5.961 -12.490
+##  [28] -10.235  -9.420  -4.013 -10.170 -10.830  -8.630  -3.633 -11.606  -9.793
+##  [37]  -9.067  -7.816 -12.086 -10.151  -8.195  -7.546 -11.911 -11.093  -5.413
+##  [46] -11.673 -12.768  -8.764  -5.198 -10.601 -12.754  -8.777  -6.246  -6.702
+##  [55] -11.821  -9.726  -7.619  -8.534 -12.821  -9.474  -7.489  -8.809 -11.100
+##  [64]  -9.328  -7.882  -7.759  -7.609  -8.123  -6.952  -9.955  -8.096  -8.545
+##  [73]  -7.965 -15.225  -9.222 -11.638  -8.974 -14.905  -8.123  -9.705  -9.932
+##  [82] -13.182 -10.347  -8.931 -10.771 -15.709 -11.187  -8.048 -13.847 -14.545
+##  [91]  -7.890  -8.322 -13.815 -15.161  -9.359  -8.231 -13.610 -15.628 -10.320
+## [100]  -8.680 -14.803 -16.061  -9.503  -7.516 -13.284 -13.825 -10.471  -8.521
+## [109] -14.099 -15.638 -10.402  -8.192 -14.362 -17.391  -9.675  -8.679 -12.801
+## [118] -19.585  -9.477  -9.753 -11.982 -18.086  -9.189  -9.365 -12.520 -17.770
+## [127]  -8.257 -10.874 -12.311 -20.934 -10.257 -10.093 -11.479 -19.034 -11.430
+## [136]  -9.899  -9.630 -13.889 -12.193  -9.786  -9.808 -15.148 -11.034  -9.452
+## [145]  -9.896 -13.937  -9.299  -9.109  -9.395 -16.120  -9.330 -10.459  -4.417
+## [154] -16.669 -10.011 -10.209 -17.228  -9.147 -11.161 -18.008  -8.294 -12.352
+## [163] -18.400  -8.439 -11.514 -18.083  -8.631 -11.353 -17.245  -7.407 -11.000
+## [172] -15.714  -8.466 -10.850 -16.448  -8.197 -10.838 -17.434  -7.706 -11.118
+## [181] -18.845  -7.533  -9.805 -19.228  -7.569  -8.565 -17.968  -9.562  -9.642
+## [190] -15.400 -10.793 -10.778 -13.150 -10.537 -10.364</code></pre>
+<pre class="r"><code>annual_pollsumm &lt;- tidypolls_summary %&gt;%
+  filter(year&gt;= 2017) %&gt;%     #remove years prior to 2017
+  
+  #create new variable &#39;interval&#39;, and assign values based on criteria below:
+  mutate(interval = case_when(
+    year %in% c(2017) ~ &quot;2017&quot;,
+    year %in% c(2018) ~ &quot;2018&quot;,
+    year %in% c(2019) ~ &quot;2019&quot;,
+    year %in% c(2020) ~ &quot;2020&quot;
+  ))</code></pre>
+<pre class="r"><code>ggplot(annual_pollsumm,aes(x=week_number,group=1,colour=factor(year)))+
+  geom_line(aes(y=average_NAR))+
+  geom_point(aes(y=average_NAR))+
+  geom_line(aes(y=CI_95))+
+  geom_line(aes(y=CI_5))+
+  geom_line(aes(y=0),colour=&quot;orange&quot;)+
+  guides(colour=FALSE)+
+  facet_wrap(~year)+
+  scale_x_continuous(breaks=c(0,13,26,39,52))+
+  labs(title=&quot;Estimating Net Approval (approve-disapprove) for Donald Trump&quot;,
+       subtitle=&quot;Weekly average of all polls&quot;,
+       x=&quot;Week of the year&quot;,
+       y=&quot;Average net approval (%)&quot;)+
+  theme_bw()</code></pre>
+<p><img src="/blogs/trump_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+<div id="compare-confidence-intervals" class="section level2">
+<h2>Compare Confidence Intervals</h2>
+<p>The confidence interval for week 15 seems to be a bit stronger than the confidence interval for week 34. Upon reviewing the data set, this didn’t make much sense to me, as week 34 had a significantly higher sample size. Intuitively, one would think a higher sample size equates to more certainty. However, after a second look, it seems the ‘grade’ for the extra pollsters are below average, which could lead to more standard deviation - which would explain the difference in confidence intervals.</p>
+</div>

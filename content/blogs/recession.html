@@ -187,8 +187,6 @@ yield_curve %&gt;%
 </div>
 <div id="month-and-10-year-yields-since-1999" class="section level3">
 <h3>3-month and 10-year yields since 1999</h3>
-<pre class="r"><code>knitr::include_graphics(here::here(&quot;images&quot;, &quot;yield_curve3.png&quot;), error = FALSE)</code></pre>
-<p><img src="/Users/charlotte/Desktop/LBS/Data Analytics/my_website/images/yield_curve3.png" width="100%" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Keep only 3-month treasury bill and 10-year treasury rate
 yield_selected &lt;- yield_curve %&gt;%
   mutate(year=format(date,&quot;%Y&quot;)) %&gt;%

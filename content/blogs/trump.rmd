@@ -1,0 +1,116 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Trump's Approval Margins
+draft: false
+image: pic06.jpg
+keywords: ""
+slug: trump
+title: Trump's Approval Margins
+---
+
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(tidyquant)
+```
+
+
+```{r, cache=TRUE}
+# Import approval polls data
+approval_polllist <- read_csv(here::here('data', 'approval_polllist.csv'))
+
+# or directly off fivethirtyeight website
+# approval_polllist <- read_csv('https://projects.fivethirtyeight.com/trump-approval-data/approval_polllist.csv') 
+
+glimpse(approval_polllist)
+
+# Use `lubridate` to fix dates, as they are given as characters.
+```
+
+```{r trump_margins, echo=FALSE, out.width="100%"}
+knitr::include_graphics(here::here("images", "trump_approval_margin.png"), error = FALSE)
+```
+
+
+```{r}
+
+# Clean up data just for pollster and results
+tidypolls <- approval_polllist %>%
+  select(enddate,pollster, approve, disapprove) %>%
+  mutate(NAR = approve - disapprove)
+tidypolls
+
+# group per date to calculare average Net Approval Rating
+tidypolls_summary <- tidypolls %>%na.omit() %>%
+  group_by(week_number = week(mdy(enddate)), year=year(mdy(enddate))) %>%
+  summarise(count = n(), average_approve = mean(approve), average_disapprove = mean(disapprove), average_NAR = average_approve - average_disapprove, sd_NAR = sd(NAR), se=sd_NAR/sqrt(count),CI_95=average_NAR+1.96*se,CI_5=average_NAR-1.96*se)
+tidypolls_summary
+tidypolls_summary$average_NAR
+
+
+annual_pollsumm <- tidypolls_summary %>%
+  filter(year>= 2017) %>%     #remove years prior to 2017
+  
+  #create new variable 'interval', and assign values based on criteria below:
+  mutate(interval = case_when(
+    year %in% c(2017) ~ "2017",
+    year %in% c(2018) ~ "2018",
+    year %in% c(2019) ~ "2019",
+    year %in% c(2020) ~ "2020"
+  ))
+```
+
+```{r,fig.width=10,fig.height=5}
+ggplot(annual_pollsumm,aes(x=week_number,group=1,colour=factor(year)))+
+  geom_line(aes(y=average_NAR))+
+  geom_point(aes(y=average_NAR))+
+  geom_line(aes(y=CI_95))+
+  geom_line(aes(y=CI_5))+
+  geom_line(aes(y=0),colour="orange")+
+  guides(colour=FALSE)+
+  facet_wrap(~year)+
+  scale_x_continuous(breaks=c(0,13,26,39,52))+
+  labs(title="Estimating Net Approval (approve-disapprove) for Donald Trump",
+       subtitle="Weekly average of all polls",
+       x="Week of the year",
+       y="Average net approval (%)")+
+  theme_bw()
+
+```
+
+
+## Compare Confidence Intervals
+
+The confidence interval for week 15 seems to be a bit stronger than the confidence interval for week 34. Upon reviewing the data set, this didn't make much sense to me, as week 34 had a significantly higher sample size. Intuitively, one would think a higher sample size equates to more certainty. However, after a second look, it seems the 'grade' for the extra pollsters are below average, which could lead to more standard deviation - which would explain the difference in confidence intervals.
+

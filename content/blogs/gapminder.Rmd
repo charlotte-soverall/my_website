@@ -26,9 +26,7 @@ library(infer)
 library(here)
 ```
 
-# Gapminder
-
-Recall the `gapminder` data frame from the gapminder package. That data frame contains just six columns from the larger [data in Gapminder World](https://www.gapminder.org/data/). In this part, I will join a few dataframes with more data than the 'gapminder' package. Specifically, you will look at data on 
+Recall the `gapminder` data frame from the gapminder package. That data frame contains just six columns from the larger [data in Gapminder World](https://www.gapminder.org/data/). In this part, we will join a few dataframes with more data than the 'gapminder' package. Specifically, we will look at data on 
 
 
 - Life expectancy at birth (life_expectancy_years.csv)
@@ -38,7 +36,7 @@ Recall the `gapminder` data frame from the gapminder package. That data frame co
 - Mortality rate, for under 5, per 1000 live births (https://data.worldbank.org/indicator/SH.DYN.MORT)
 - HIV prevalence (adults_with_hiv_percent_age_15_49.csv): The estimated number of people living with HIV per 100 population of age group 15-49.
 
-I used the `wbstats` package to download data from the World Bank. The relevant World Bank indicators are `SP.DYN.TFRT.IN`, `SE.PRM.NENR`, `NY.GDP.PCAP.KD`, and `SH.DYN.MORT`
+
 
 ```{r, get_data, cache=TRUE}
 
@@ -51,8 +49,8 @@ indicators <- c("SP.DYN.TFRT.IN","SE.PRM.NENR", "SH.DYN.MORT", "NY.GDP.PCAP.KD")
 
 
 library(wbstats)
-
-worldbank_data <- wb_data(country="countries_only", #countries only- no aggregates like Latin America, Europe, etc.
+#countries only- no aggregates like Latin America, Europe, etc.
+worldbank_data <- wb_data(country="countries_only", 
                           indicator = indicators, 
                           start_date = 1960, 
                           end_date = 2016)
@@ -61,3 +59,233 @@ worldbank_data <- wb_data(country="countries_only", #countries only- no aggregat
 countries <-  wbstats::wb_cachelist$countries
 
 ```
+
+```{r}
+library(tidyverse)
+
+hiv1<-hiv %>% 
+  pivot_longer(cols=2:34,names_to="date",values_to="hiv_rate") %>% 
+  print()
+
+life_exp<-life_expectancy %>% 
+  pivot_longer(cols=2:302,names_to="date",values_to="life_exp") %>% 
+  print()
+  
+# Change "hiv$year" and "life_exp$year"from character to integer 
+hiv1$date<-as.integer(hiv1$date)
+life_exp$date<-as.integer(life_exp$date)
+
+worldbankdata1<-worldbank_data %>% 
+  select(c(-iso2c,-iso3c))
+```
+
+I use a mutating join, specifically the full join for the datasets, where it keeps observations that appear in at least one of the tables, so I can include those countries and dates that are only in one of the datasets.
+
+```{r}
+df<-full_join(worldbankdata1,hiv1,by=c("country","date"))
+data<-full_join(df,life_exp,by=c("country","date"))
+```
+
+## The relationship between HIV prevalence and life expectancy
+```{r}
+# We winsorize these potentially unbounded variables at the  1% and 99% extremes to mitigate the influence of outliers in life_exp.
+
+#We first add regions to our dataset.
+region<-countries %>% 
+  select(country,region) 
+
+data_new<-left_join(region,data,by="country")
+
+data_new %>% 
+  select(country,region,date,life_exp,hiv_rate) %>% 
+  na.omit() %>% 
+  ggplot(aes(x=life_exp,y=hiv_rate))+
+  geom_point()+
+  geom_smooth(color="red")+
+  theme_bw() +
+  facet_wrap(~region,scales="free")+
+  labs (
+    title = "Relationship between HIV prevalence and life expectancy",
+    x="Life expectancy",
+    y="HIV rate"
+  )
+```
+
+It seems that Hiv prevalence have an overall negative relationship with life expectance, especially demonstrated by the statistics in Sub-saharan Africa, where there are relatively more samples of HIV, and shows a clearer pattern.
+
+```{r}
+data_new%>% 
+  select(country,date,SP.DYN.TFRT.IN,NY.GDP.PCAP.KD,region) %>% 
+  na.omit() %>% 
+  ggplot(aes(x=NY.GDP.PCAP.KD,y=SP.DYN.TFRT.IN))+
+  geom_point()+
+  geom_smooth(color="red")+
+  theme_bw() +
+  labs (
+    title = "Relationship between fertility rate and GDP per capita",
+    x="GDP per capita",
+    y="Fertility rate"
+  )+
+  facet_wrap(~region)
+```
+
+In general, fertility rate decreases when GDP per capita increases, implying that richer countries and times have generally lower fertility. However the pattern is different in places like Middle east & north africa and Sub-saharan africa, with many outliers suggesting that GPD per capita actually decrease when the fertility rate goes too high -- which means the population is too large.
+
+## Regions have the most observations with missing HIV data
+
+```{r}
+
+data1<-data_new %>% 
+  select(region,hiv_rate) %>% 
+  mutate(missing_hiv=case_when(
+    is.na(hiv_rate)~1,
+    TRUE~0
+  )) 
+  
+data1 %>% 
+  group_by(region) %>% 
+  summarise(missing=sum(missing_hiv)) %>% 
+  arrange(desc(missing)) %>% 
+  head(5) %>% 
+  ggplot(aes(x=missing,y=reorder(region,missing))) + 
+    geom_col()+
+    labs(
+      title="Top 5 regions with most missing HIV data",
+      x="number of missing data",
+      y="region"
+    )
+```
+
+Europe & Central Asia, Sub-saharan africa, Latin America, East Asia, and Middle Asia are the regions with most missing HIV data.
+
+## Mortality rates and improvement
+
+```{r}
+
+growth_rate<-data_new %>% 
+  group_by(country) %>% 
+  arrange(date) %>%
+  na.omit() %>%
+  mutate(Diff_year = date - lag(date),  # Difference in time (just in case there are gaps)
+         Diff_growth = SH.DYN.MORT - lag(SH.DYN.MORT), # Difference in mortality rate between years
+         Rate_percent = (Diff_growth / Diff_year)/SH.DYN.MORT * 100)
+
+Average_growth<-growth_rate %>% 
+  group_by(region,country) %>% 
+  summarize(mean=mean(Rate_percent, na.rm = TRUE)) 
+
+Average_growth
+```
+
+```{r}
+#These are the top 5 countries that have seen the greatest improvement in each region (largest negative growth in mortality rates):
+
+Top5_eastasia<-Average_growth %>% 
+  filter(region=="East Asia & Pacific")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_europe<-Average_growth %>% 
+  filter(region=="Europe & Central Asia")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_latin<-Average_growth %>% 
+  filter(region=="Latin America & Caribbean")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_middleeast<-Average_growth %>% 
+  filter(region=="Middle East & North Africa")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_north<-Average_growth %>% 
+  filter(region=="North America")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_south<-Average_growth %>% 
+  filter(region=="South Asia")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+
+Top5_sub<-Average_growth %>% 
+  filter(region=="Sub-Saharan Africa")%>% 
+  arrange(mean) %>% 
+  head(5) %>% 
+  print()
+```
+
+```{r}
+#These are the top 5 countries that have seen the least improvement in each region (largest positive growth in mortality rates):
+
+Bottom5_eastasia<-Average_growth %>% 
+  filter(region=="East Asia & Pacific")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_europe<-Average_growth %>% 
+  filter(region=="Europe & Central Asia")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_latin<-Average_growth %>% 
+  filter(region=="Latin America & Caribbean")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_middleeast<-Average_growth %>% 
+  filter(region=="Middle East & North Africa")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_north<-Average_growth %>% 
+  filter(region=="North America")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_south<-Average_growth %>% 
+  filter(region=="South Asia")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+
+Bottom5_sub<-Average_growth %>% 
+  filter(region=="Sub-Saharan Africa")%>% 
+  arrange(mean) %>% 
+  tail(5) %>% 
+  print()
+```
+
+## Relationship between primary school enrollment and fertility rate
+
+```{r}
+data_new%>% 
+  select(country,date,SP.DYN.TFRT.IN,SE.PRM.NENR,region) %>% 
+  na.omit() %>% 
+  ggplot(aes(x=SP.DYN.TFRT.IN,y=SE.PRM.NENR))+
+  geom_point()+
+  geom_smooth(color="red")+
+  theme_bw() +
+  labs (
+    title = "Relationship between primary school enrollment and fertility rate",
+    x="Fertility rate",
+    y="Primary school enrollment"
+  )+
+  facet_wrap(~region,scales="free")
+```
+
+According to the graph, primary school enrollment rate decreases when fertility rate increase. This makes sense since having too much population can make the educational service over-burdened, and not enough vacancies are left -- which leads to lower enrollment rate.
+

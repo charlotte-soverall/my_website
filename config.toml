@@ -98,15 +98,15 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "General Social Survey"
-      subtitle = "Taking a look who use social media"
+      subtitle = "Taking a look who's using social media"
       image = "pic01.jpg"
       url = "blogs/gss"
       
     [[params.tiles.showcase]]
-      title = "Can yield curve inversion actually predict recessions? "
+      title = "Trump's Approval Margins "
       subtitle = "Let's use data analysis to find out!"
       image = "pic04.jpg"
-      url = "blogs/recession"
+      url = "blogs/trump"
       
     [[params.tiles.showcase]]
       title = "Gapminder"

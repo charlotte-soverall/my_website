@@ -37,16 +37,9 @@ library(here)
 
 > # Charlotte Soverall's Biography 
 As  *‘third culture kid’*, born in London, but raised in expatriate communities, I have learned how to successfully navigate change and to embrace challenges. My diverse experience and value of different perspectives guided my decision to study for the Masters of Financial Analysis (MFA) at London Business School; an international community rooted in collaboration.
-.My time at Estee Lauder Companies (ELC) in London and PhaphamaSEDI, an NGO in Cape Town, allowed me to use and refine my skills of problem-solving, teamwork and transforming insight into actions: 
-	Problem-solving: Whilst at the NGO, I developed sustainable business strategies and formalised my clients’ business operations. My entrepreneurial inclinations combined with my client’s capabilities achieved our objective of transforming their businesses into their primary source of income through a 240% increase in profit. 
-	Teamwork and leadership: Throughout my university and work experience I worked cohesively with the team; both as a leader and a team member. Last year, I was invited to apply for the Head of Fundraising for the NGO and was subsequently appointed to its executive committee. I managed and appointed 70 consultants and 30 entrepreneurs and was responsible for reporting to the Board of Directors on a quarterly basis. 
-	Research and analytical skills: As an intern at ELC, I analysed travel retail data using excel and researched consumer trends, to assess ELC’s market position and was able to refine my technical excel skills. I am enjoying the core component of my MFA which is data analytics using R programming. This directly addresses many of the limitations of excel.
-Other interests
-Firstly; I am passionate about reading and writing and so during my undergraduate degree, I founded a Bookclub. It ran for three years and get to over 30 members. Each member assigned a book and we met monthly to have discussions. This was a wonderful experience and I am subsequently, forming a Female Authors Bookclub at London Business School. My aim is formalise the bookclub and make it an official club at LBS.
+
+>Other interests
+
+>Firstly; I am passionate about reading and writing and so during my undergraduate degree, I founded a Bookclub. It ran for three years and get to over 30 members. Each member assigned a book and we met monthly to have discussions. This was a wonderful experience and I am subsequently, forming a Female Authors Bookclub at London Business School. My aim is formalise the bookclub and make it an official club at LBS.
 Secondly; I love writing poetry and short stories. I completed an on-line Creative Writing Course in May with Penguin Random House. The objective was to develop a unique writing voice and teaching skills for effective writing. I am currently writing a short story/potential novel.
-Thirdly, I have always loved cooking and in June 2019, I attended a short course at Le Corden Bleu in Paris specialising in French food. (to find our more about the course <https://www.cordonbleu.edu/paris/culinary-workshop-the-art-of-cooking-like-a-chef/en>) 
-image: ![Some of the food we made](Data/IMG_6146.jpg) image: ![Mum and Me!](Data/IMG_6149.jpg)
-As you can see it was an incredible experience!
-* We cooked 2 main dishes:  
-  + The perfect egg, Jerusalem artichokes confit with duck magret, Parmesan Reggiano cream 
-  + Scallops with yuzu and ginger butter, basmati rice pilaf with lemon grass
+Thirdly, I have always loved cooking and in June 2019, I attended a short course at Le Corden Bleu in Paris specialising in French food. (to find our more about the course <https://www.cordonbleu.edu/paris/culinary-workshop-the-art-of-cooking-like-a-chef/en>).

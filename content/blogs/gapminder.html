@@ -14,9 +14,7 @@ title: gapminder
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<div id="gapminder" class="section level1">
-<h1>Gapminder</h1>
-<p>Recall the <code>gapminder</code> data frame from the gapminder package. That data frame contains just six columns from the larger <a href="https://www.gapminder.org/data/">data in Gapminder World</a>. In this part, I will join a few dataframes with more data than the ‘gapminder’ package. Specifically, you will look at data on</p>
+<p>Recall the <code>gapminder</code> data frame from the gapminder package. That data frame contains just six columns from the larger <a href="https://www.gapminder.org/data/">data in Gapminder World</a>. In this part, we will join a few dataframes with more data than the ‘gapminder’ package. Specifically, we will look at data on</p>
 <ul>
 <li>Life expectancy at birth (life_expectancy_years.csv)</li>
 <li>GDP per capita in constant 2010 US$ (<a href="https://data.worldbank.org/indicator/NY.GDP.PCAP.KD" class="uri">https://data.worldbank.org/indicator/NY.GDP.PCAP.KD</a>)</li>
@@ -25,7 +23,6 @@ title: gapminder
 <li>Mortality rate, for under 5, per 1000 live births (<a href="https://data.worldbank.org/indicator/SH.DYN.MORT" class="uri">https://data.worldbank.org/indicator/SH.DYN.MORT</a>)</li>
 <li>HIV prevalence (adults_with_hiv_percent_age_15_49.csv): The estimated number of people living with HIV per 100 population of age group 15-49.</li>
 </ul>
-<p>I used the <code>wbstats</code> package to download data from the World Bank. The relevant World Bank indicators are <code>SP.DYN.TFRT.IN</code>, <code>SE.PRM.NENR</code>, <code>NY.GDP.PCAP.KD</code>, and <code>SH.DYN.MORT</code></p>
 <pre class="r"><code># load gapminder HIV data
 hiv &lt;- read_csv(here::here(&quot;data&quot;,&quot;adults_with_hiv_percent_age_15_49.csv&quot;))</code></pre>
 <pre><code>## Parsed with column specification:
@@ -48,12 +45,368 @@ indicators &lt;- c(&quot;SP.DYN.TFRT.IN&quot;,&quot;SE.PRM.NENR&quot;, &quot;SH.
 
 
 library(wbstats)
-
-worldbank_data &lt;- wb_data(country=&quot;countries_only&quot;, #countries only- no aggregates like Latin America, Europe, etc.
+#countries only- no aggregates like Latin America, Europe, etc.
+worldbank_data &lt;- wb_data(country=&quot;countries_only&quot;, 
                           indicator = indicators, 
                           start_date = 1960, 
                           end_date = 2016)
 
 # get a dataframe of information regarding countries, indicators, sources, regions, indicator topics, lending types, income levels,  from the World Bank API 
 countries &lt;-  wbstats::wb_cachelist$countries</code></pre>
+<pre class="r"><code>library(tidyverse)
+
+hiv1&lt;-hiv %&gt;% 
+  pivot_longer(cols=2:34,names_to=&quot;date&quot;,values_to=&quot;hiv_rate&quot;) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5,082 x 3
+##    country     date  hiv_rate
+##    &lt;chr&gt;       &lt;chr&gt;    &lt;dbl&gt;
+##  1 Afghanistan 1979        NA
+##  2 Afghanistan 1980        NA
+##  3 Afghanistan 1981        NA
+##  4 Afghanistan 1982        NA
+##  5 Afghanistan 1983        NA
+##  6 Afghanistan 1984        NA
+##  7 Afghanistan 1985        NA
+##  8 Afghanistan 1986        NA
+##  9 Afghanistan 1987        NA
+## 10 Afghanistan 1988        NA
+## # … with 5,072 more rows</code></pre>
+<pre class="r"><code>life_exp&lt;-life_expectancy %&gt;% 
+  pivot_longer(cols=2:302,names_to=&quot;date&quot;,values_to=&quot;life_exp&quot;) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 56,287 x 3
+##    country     date  life_exp
+##    &lt;chr&gt;       &lt;chr&gt;    &lt;dbl&gt;
+##  1 Afghanistan 1800      28.2
+##  2 Afghanistan 1801      28.2
+##  3 Afghanistan 1802      28.2
+##  4 Afghanistan 1803      28.2
+##  5 Afghanistan 1804      28.2
+##  6 Afghanistan 1805      28.2
+##  7 Afghanistan 1806      28.1
+##  8 Afghanistan 1807      28.1
+##  9 Afghanistan 1808      28.1
+## 10 Afghanistan 1809      28.1
+## # … with 56,277 more rows</code></pre>
+<pre class="r"><code># Change &quot;hiv$year&quot; and &quot;life_exp$year&quot;from character to integer 
+hiv1$date&lt;-as.integer(hiv1$date)
+life_exp$date&lt;-as.integer(life_exp$date)
+
+worldbankdata1&lt;-worldbank_data %&gt;% 
+  select(c(-iso2c,-iso3c))</code></pre>
+<p>I use a mutating join, specifically the full join for the datasets, where it keeps observations that appear in at least one of the tables, so I can include those countries and dates that are only in one of the datasets.</p>
+<pre class="r"><code>df&lt;-full_join(worldbankdata1,hiv1,by=c(&quot;country&quot;,&quot;date&quot;))
+data&lt;-full_join(df,life_exp,by=c(&quot;country&quot;,&quot;date&quot;))</code></pre>
+<div id="the-relationship-between-hiv-prevalence-and-life-expectancy" class="section level2">
+<h2>The relationship between HIV prevalence and life expectancy</h2>
+<pre class="r"><code># We winsorize these potentially unbounded variables at the  1% and 99% extremes to mitigate the influence of outliers in life_exp.
+
+#We first add regions to our dataset.
+region&lt;-countries %&gt;% 
+  select(country,region) 
+
+data_new&lt;-left_join(region,data,by=&quot;country&quot;)
+
+data_new %&gt;% 
+  select(country,region,date,life_exp,hiv_rate) %&gt;% 
+  na.omit() %&gt;% 
+  ggplot(aes(x=life_exp,y=hiv_rate))+
+  geom_point()+
+  geom_smooth(color=&quot;red&quot;)+
+  theme_bw() +
+  facet_wrap(~region,scales=&quot;free&quot;)+
+  labs (
+    title = &quot;Relationship between HIV prevalence and life expectancy&quot;,
+    x=&quot;Life expectancy&quot;,
+    y=&quot;HIV rate&quot;
+  )</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/gapminder_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>It seems that Hiv prevalence have an overall negative relationship with life expectance, especially demonstrated by the statistics in Sub-saharan Africa, where there are relatively more samples of HIV, and shows a clearer pattern.</p>
+<pre class="r"><code>data_new%&gt;% 
+  select(country,date,SP.DYN.TFRT.IN,NY.GDP.PCAP.KD,region) %&gt;% 
+  na.omit() %&gt;% 
+  ggplot(aes(x=NY.GDP.PCAP.KD,y=SP.DYN.TFRT.IN))+
+  geom_point()+
+  geom_smooth(color=&quot;red&quot;)+
+  theme_bw() +
+  labs (
+    title = &quot;Relationship between fertility rate and GDP per capita&quot;,
+    x=&quot;GDP per capita&quot;,
+    y=&quot;Fertility rate&quot;
+  )+
+  facet_wrap(~region)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<p><img src="/blogs/gapminder_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>In general, fertility rate decreases when GDP per capita increases, implying that richer countries and times have generally lower fertility. However the pattern is different in places like Middle east &amp; north africa and Sub-saharan africa, with many outliers suggesting that GPD per capita actually decrease when the fertility rate goes too high – which means the population is too large.</p>
+</div>
+<div id="regions-have-the-most-observations-with-missing-hiv-data" class="section level2">
+<h2>Regions have the most observations with missing HIV data</h2>
+<pre class="r"><code>data1&lt;-data_new %&gt;% 
+  select(region,hiv_rate) %&gt;% 
+  mutate(missing_hiv=case_when(
+    is.na(hiv_rate)~1,
+    TRUE~0
+  )) 
+  
+data1 %&gt;% 
+  group_by(region) %&gt;% 
+  summarise(missing=sum(missing_hiv)) %&gt;% 
+  arrange(desc(missing)) %&gt;% 
+  head(5) %&gt;% 
+  ggplot(aes(x=missing,y=reorder(region,missing))) + 
+    geom_col()+
+    labs(
+      title=&quot;Top 5 regions with most missing HIV data&quot;,
+      x=&quot;number of missing data&quot;,
+      y=&quot;region&quot;
+    )</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<p><img src="/blogs/gapminder_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Europe &amp; Central Asia, Sub-saharan africa, Latin America, East Asia, and Middle Asia are the regions with most missing HIV data.</p>
+</div>
+<div id="mortality-rates-and-improvement" class="section level2">
+<h2>Mortality rates and improvement</h2>
+<pre class="r"><code>growth_rate&lt;-data_new %&gt;% 
+  group_by(country) %&gt;% 
+  arrange(date) %&gt;%
+  na.omit() %&gt;%
+  mutate(Diff_year = date - lag(date),  # Difference in time (just in case there are gaps)
+         Diff_growth = SH.DYN.MORT - lag(SH.DYN.MORT), # Difference in mortality rate between years
+         Rate_percent = (Diff_growth / Diff_year)/SH.DYN.MORT * 100)
+
+Average_growth&lt;-growth_rate %&gt;% 
+  group_by(region,country) %&gt;% 
+  summarize(mean=mean(Rate_percent, na.rm = TRUE)) </code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;region&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>Average_growth</code></pre>
+<pre><code>## # A tibble: 134 x 3
+## # Groups:   region [7]
+##    region              country       mean
+##    &lt;chr&gt;               &lt;chr&gt;        &lt;dbl&gt;
+##  1 East Asia &amp; Pacific Australia   -3.51 
+##  2 East Asia &amp; Pacific Cambodia    -7.43 
+##  3 East Asia &amp; Pacific Fiji        -0.723
+##  4 East Asia &amp; Pacific Indonesia   -4.70 
+##  5 East Asia &amp; Pacific Malaysia    -3.13 
+##  6 East Asia &amp; Pacific Mongolia    -7.46 
+##  7 East Asia &amp; Pacific Myanmar     -4.16 
+##  8 East Asia &amp; Pacific New Zealand -4.77 
+##  9 East Asia &amp; Pacific Philippines -2.60 
+## 10 East Asia &amp; Pacific Thailand    -4.92 
+## # … with 124 more rows</code></pre>
+<pre class="r"><code>#These are the top 5 countries that have seen the greatest improvement in each region (largest negative growth in mortality rates):
+
+Top5_eastasia&lt;-Average_growth %&gt;% 
+  filter(region==&quot;East Asia &amp; Pacific&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region              country      mean
+##   &lt;chr&gt;               &lt;chr&gt;       &lt;dbl&gt;
+## 1 East Asia &amp; Pacific Mongolia    -7.46
+## 2 East Asia &amp; Pacific Cambodia    -7.43
+## 3 East Asia &amp; Pacific Thailand    -4.92
+## 4 East Asia &amp; Pacific New Zealand -4.77
+## 5 East Asia &amp; Pacific Indonesia   -4.70</code></pre>
+<pre class="r"><code>Top5_europe&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Europe &amp; Central Asia&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                country     mean
+##   &lt;chr&gt;                 &lt;chr&gt;      &lt;dbl&gt;
+## 1 Europe &amp; Central Asia Georgia    -8.88
+## 2 Europe &amp; Central Asia Estonia    -8.66
+## 3 Europe &amp; Central Asia Belarus    -8.33
+## 4 Europe &amp; Central Asia Kazakhstan -7.91
+## 5 Europe &amp; Central Asia Turkey     -7.30</code></pre>
+<pre class="r"><code>Top5_latin&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Latin America &amp; Caribbean&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                    country      mean
+##   &lt;chr&gt;                     &lt;chr&gt;       &lt;dbl&gt;
+## 1 Latin America &amp; Caribbean Peru        -7.30
+## 2 Latin America &amp; Caribbean Brazil      -6.39
+## 3 Latin America &amp; Caribbean Bolivia     -6.15
+## 4 Latin America &amp; Caribbean Ecuador     -5.65
+## 5 Latin America &amp; Caribbean El Salvador -5.51</code></pre>
+<pre class="r"><code>Top5_middleeast&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Middle East &amp; North Africa&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                     country  mean
+##   &lt;chr&gt;                      &lt;chr&gt;   &lt;dbl&gt;
+## 1 Middle East &amp; North Africa Oman    -8.27
+## 2 Middle East &amp; North Africa Tunisia -5.40
+## 3 Middle East &amp; North Africa Morocco -4.66
+## 4 Middle East &amp; North Africa Israel  -4.19
+## 5 Middle East &amp; North Africa Malta   -3.83</code></pre>
+<pre class="r"><code>Top5_north&lt;-Average_growth %&gt;% 
+  filter(region==&quot;North America&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 2 x 3
+## # Groups:   region [1]
+##   region        country        mean
+##   &lt;chr&gt;         &lt;chr&gt;         &lt;dbl&gt;
+## 1 North America Canada        -2.90
+## 2 North America United States -1.65</code></pre>
+<pre class="r"><code>Top5_south&lt;-Average_growth %&gt;% 
+  filter(region==&quot;South Asia&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region     country      mean
+##   &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt;
+## 1 South Asia Maldives   -12.4 
+## 2 South Asia Sri Lanka   -8.69
+## 3 South Asia Bangladesh  -6.33
+## 4 South Asia Bhutan      -6.14
+## 5 South Asia Nepal       -6.12</code></pre>
+<pre class="r"><code>Top5_sub&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Sub-Saharan Africa&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  head(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region             country                 mean
+##   &lt;chr&gt;              &lt;chr&gt;                  &lt;dbl&gt;
+## 1 Sub-Saharan Africa Rwanda                -10.1 
+## 2 Sub-Saharan Africa Malawi                 -6.62
+## 3 Sub-Saharan Africa Angola                 -6.60
+## 4 Sub-Saharan Africa Sao Tome and Principe  -6.44
+## 5 Sub-Saharan Africa Uganda                 -6.42</code></pre>
+<pre class="r"><code>#These are the top 5 countries that have seen the least improvement in each region (largest positive growth in mortality rates):
+
+Bottom5_eastasia&lt;-Average_growth %&gt;% 
+  filter(region==&quot;East Asia &amp; Pacific&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region              country       mean
+##   &lt;chr&gt;               &lt;chr&gt;        &lt;dbl&gt;
+## 1 East Asia &amp; Pacific Australia   -3.51 
+## 2 East Asia &amp; Pacific Malaysia    -3.13 
+## 3 East Asia &amp; Pacific Vietnam     -3.01 
+## 4 East Asia &amp; Pacific Philippines -2.60 
+## 5 East Asia &amp; Pacific Fiji        -0.723</code></pre>
+<pre class="r"><code>Bottom5_europe&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Europe &amp; Central Asia&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                country         mean
+##   &lt;chr&gt;                 &lt;chr&gt;          &lt;dbl&gt;
+## 1 Europe &amp; Central Asia Serbia         -3.13
+## 2 Europe &amp; Central Asia United Kingdom -3.06
+## 3 Europe &amp; Central Asia Switzerland    -2.93
+## 4 Europe &amp; Central Asia Germany        -2.48
+## 5 Europe &amp; Central Asia Austria        -2.43</code></pre>
+<pre class="r"><code>Bottom5_latin&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Latin America &amp; Caribbean&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                    country                mean
+##   &lt;chr&gt;                     &lt;chr&gt;                 &lt;dbl&gt;
+## 1 Latin America &amp; Caribbean Dominican Republic   -1.79 
+## 2 Latin America &amp; Caribbean Trinidad and Tobago  -1.58 
+## 3 Latin America &amp; Caribbean Chile                -1.16 
+## 4 Latin America &amp; Caribbean Barbados             -0.750
+## 5 Latin America &amp; Caribbean Haiti               NaN</code></pre>
+<pre class="r"><code>Bottom5_middleeast&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Middle East &amp; North Africa&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region                     country  mean
+##   &lt;chr&gt;                      &lt;chr&gt;   &lt;dbl&gt;
+## 1 Middle East &amp; North Africa Morocco -4.66
+## 2 Middle East &amp; North Africa Israel  -4.19
+## 3 Middle East &amp; North Africa Malta   -3.83
+## 4 Middle East &amp; North Africa Qatar   -3.54
+## 5 Middle East &amp; North Africa Algeria -3.00</code></pre>
+<pre class="r"><code>Bottom5_north&lt;-Average_growth %&gt;% 
+  filter(region==&quot;North America&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 2 x 3
+## # Groups:   region [1]
+##   region        country        mean
+##   &lt;chr&gt;         &lt;chr&gt;         &lt;dbl&gt;
+## 1 North America Canada        -2.90
+## 2 North America United States -1.65</code></pre>
+<pre class="r"><code>Bottom5_south&lt;-Average_growth %&gt;% 
+  filter(region==&quot;South Asia&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region     country     mean
+##   &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt;
+## 1 South Asia Bangladesh -6.33
+## 2 South Asia Bhutan     -6.14
+## 3 South Asia Nepal      -6.12
+## 4 South Asia India      -4.50
+## 5 South Asia Pakistan   -2.07</code></pre>
+<pre class="r"><code>Bottom5_sub&lt;-Average_growth %&gt;% 
+  filter(region==&quot;Sub-Saharan Africa&quot;)%&gt;% 
+  arrange(mean) %&gt;% 
+  tail(5) %&gt;% 
+  print()</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   region [1]
+##   region             country         mean
+##   &lt;chr&gt;              &lt;chr&gt;          &lt;dbl&gt;
+## 1 Sub-Saharan Africa Lesotho        0.241
+## 2 Sub-Saharan Africa South Africa   2.47 
+## 3 Sub-Saharan Africa Gabon        NaN    
+## 4 Sub-Saharan Africa South Sudan  NaN    
+## 5 Sub-Saharan Africa Sudan        NaN</code></pre>
+</div>
+<div id="relationship-between-primary-school-enrollment-and-fertility-rate" class="section level2">
+<h2>Relationship between primary school enrollment and fertility rate</h2>
+<pre class="r"><code>data_new%&gt;% 
+  select(country,date,SP.DYN.TFRT.IN,SE.PRM.NENR,region) %&gt;% 
+  na.omit() %&gt;% 
+  ggplot(aes(x=SP.DYN.TFRT.IN,y=SE.PRM.NENR))+
+  geom_point()+
+  geom_smooth(color=&quot;red&quot;)+
+  theme_bw() +
+  labs (
+    title = &quot;Relationship between primary school enrollment and fertility rate&quot;,
+    x=&quot;Fertility rate&quot;,
+    y=&quot;Primary school enrollment&quot;
+  )+
+  facet_wrap(~region,scales=&quot;free&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<p><img src="/blogs/gapminder_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>According to the graph, primary school enrollment rate decreases when fertility rate increase. This makes sense since having too much population can make the educational service over-burdened, and not enough vacancies are left – which leads to lower enrollment rate.</p>
 </div>
