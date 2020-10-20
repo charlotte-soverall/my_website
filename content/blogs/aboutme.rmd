@@ -8,7 +8,7 @@ draft: false
 image: pic2.jpg
 keywords: ""
 slug: aboutme
-title: Here's a bit about me
+title: My CV
 ---
 
 ```{r, setup, include=FALSE}
@@ -33,9 +33,9 @@ library(gapminder)
 library(here)
 ```
 
-# Short biography written using markdown
+# Here's a bit about me!
 
-> # Charlotte Soverall's Biography 
+> 
 As  *‘third culture kid’*, born in London, but raised in expatriate communities, I have learned how to successfully navigate change and to embrace challenges. I adapt quickly to change and also to thrive in challenging circumstances. I enjoy seeking new opportunities and appreciate diversity of thought; collaboration with people whose experiences differ from my own and I value their perspectives. This guided my decision to study, a Masters of Financial Analysis at London Business School; an international community rooted in collaboration.
 
 >Other interests
