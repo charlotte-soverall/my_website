@@ -1,0 +1,194 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: This data has been provided by the General Social Survey
+draft: false
+image: pic07.jpg
+keywords: ""
+slug: gss
+title: General Social Survey
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+library(infer)
+library(knitr)
+```
+
+General Social Survey (GSS)
+
+The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
+
+
+## Data initialization and manipulation
+
+I analyzed data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. The GSS sample data file has 2867 observations of 935 variables, but we are only interested in very few of these variables and we are using a smaller file.
+
+```{r, read_gss_data, cache=TRUE}
+gss <- read_csv(here::here("data", "smallgss2016.csv"), 
+                na = c("", "Don't know",
+                       "No answer", "Not applicable"))
+```
+
+I will be creating 95% confidence intervals for population parameters. The variables we have are the following:
+
+- hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. For example, if the response is 2.50 hours, this would be recorded as emailhr = 2 and emailmin = 30.
+- `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
+- `sex`: Female - Male
+- `degree`: highest education level attained
+
+
+## Instagram and Snapchat, by sex
+
+Here we estimate the *population* proportion of Snapchat or Instagram users in 2016. 
+
+
+```{r}
+# Create a new variable, `snap_insta` that is *Yes* if the respondent reported using any of Snapchat (`snapchat`) or Instagram (`instagrm`), and *No* if not. If the recorded value was NA for both of these questions, we set the value to NA.
+
+gss_snap_insta<-gss %>%
+  mutate(snap_insta=case_when(
+    snapchat=="Yes"|instagrm=="Yes" ~ "Yes",
+    snapchat=="NA"&instagrm=="NA" ~ "NA",
+    TRUE ~ "No")
+  )
+gss_snap_insta
+```
+
+```{r}
+# Calculate proportion of "Yes" in snap_insta, excluding NA
+df<-gss_snap_insta %>%
+  filter(snap_insta!="NA") %>%
+  mutate(bool=case_when(
+    snap_insta=="Yes" ~ 1,
+    TRUE ~ 0)
+    )
+
+sum(df$bool)/count(df)
+```
+
+```{r}
+# Calculate 95% CIs for men and women
+df %>%
+  group_by(sex) %>%
+  summarise(mean=mean(bool,na.rm=TRUE),std_dev=sd(bool,na.rm=TRUE),count=n(),se=std_dev/sqrt(count),CI_95=mean+1.96*se,CI_5=mean-1.96*se)
+
+```
+
+My results show, in 2016, 42% of females used either Instagram or Snapchat whilst for males only 32% of used either Instagram or Snapchat. We do not have information about the age of the individuals. We anticipate that for millennials and generation Z the mean would be higher and there would be a smaller difference between male and female means. Whereas, for the older generations the average person who use either used either Instagram or Snapchat would be lower that 42%.
+
+
+## Twitter, by education level
+
+Here we estimate the *population* proportion of Twitter users by education level in 2016.
+
+```{r}
+# Turn "degree" into a factor variable
+gss$degree <- factor(gss$degree,levels=c("Lt high school","High School","Junior College","Bachelor","Graduate"))
+```
+
+```{r}
+# Create the new variable "bachelor_graduate"
+gss_twitter <- gss %>%
+  mutate(bachelor_graduate=case_when(
+    degree=="Bachelor" | degree=="Graduate" ~ "Yes",
+    is.na(degree) ~ "NA",
+    TRUE ~ "No"
+  ))
+
+df2 <- gss_twitter %>%
+  filter(twitter!="NA") %>%
+  mutate(bool=case_when(
+    twitter=="Yes" ~ 1,
+    TRUE ~ 0)
+  )
+
+sum(df2$bool)/count(df2)
+```
+
+```{r}
+# Calculate 95% CI by education level
+df2 %>%
+  group_by(bachelor_graduate) %>%
+  filter(bachelor_graduate!="NA") %>%
+  summarise(mean=mean(bool,na.rm=TRUE),std_dev=sd(bool,na.rm=TRUE),count=n(),se=std_dev/sqrt(count),CI_95=mean+1.96*se,CI_5=mean-1.96*se)
+```
+
+The 95% confidence interval for respondents with a Bachelor or Graduate degree is 0.196-0.271 while that for repondents without such degrees is 0.069-0.211. These two confidence intervals do overlap. 
+
+
+
+## Email Usage
+
+Here we estimate the *population* parameter on time spent on email weekly.
+
+```{r}
+# Turn character into numeric
+gss$emailhr <- as.numeric(gss$emailhr)
+gss$emailmin <- as.numeric(gss$emailmin)
+
+# Create a new variable called `email` that combines `emailhr` and `emailmin` to reports the number of minutes the respondents spend on email weekly.
+gss_email <- gss %>%
+  mutate(email=emailhr*60+emailmin)
+
+# Visualise the distribution of this new variable.
+ggplot(gss_email,aes(email))+geom_boxplot()+labs(title="Distribution of weekly minutes spent on email",x="Number of minutes")+theme_bw()
+ggplot(gss_email,aes(email))+geom_density()+labs(title="Distribution of weekly minutes spent on email",x="Number of minutes")+theme_bw()
+
+# Calculate mean and median 
+gss_email %>%
+  summarise(mean=mean(email,na.rm=TRUE),median=median(email,na.rm=TRUE))
+```
+
+The median would be a more accurate measure of the typical time taken Americans spend on their emails weekly. This is because the distribution of weekly time spent on emails is is skewed to the right and has extreme values. Therefore, the mean would not be an accurate reflection of the topical American  usage as it would incorporate the outliers/extreme values whereas the median would not.
+
+
+```{r}
+# Using the `infer` package to calculate a 95% bootstrap confidence interval
+
+set.seed(1234)
+
+boot_email <- gss_email %>%
+  specify(response=email) %>%
+  generate(reps=1000,type="bootstrap") %>%
+  calculate(stat="mean")
+
+percentile_ci <- boot_email %>%
+  get_confidence_interval(level=0.95,type="percentile") 
+
+percentile_ci$lower_ci<-paste(floor(percentile_ci$lower_ci/60),"hrs",round(percentile_ci$lower_ci-floor(percentile_ci$lower_ci/60)*60),"mins")
+percentile_ci$upper_ci<-paste(floor(percentile_ci$upper_ci/60),"hrs",round(percentile_ci$upper_ci-floor(percentile_ci$upper_ci/60)*60),"mins")
+
+percentile_ci
+```
+
+It's 95% chance that average amount of time Americans spend on email weekly falls within 6 hours 25 miniutes to 7 hours 33 minutes. Since 99% confidence intervals actually raise the change that the real mean value of population falls within the range, it will be wider than the 95% interval we calculated.
+

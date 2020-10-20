@@ -89,11 +89,6 @@ disqusShortname = ""
     enable = true
     # Display your showcases here.
     
-    [[params.tiles.showcase]]
-      title = "CDC Covid-19 Case Surveillance"
-      subtitle = "Taking a look at patient-level data reported to U.S. states"
-      image = "pic01.jpg"
-      url = "blogs/covid"
 
     [[params.tiles.showcase]]
       title = "Climate change and temperature anomalies"
@@ -101,6 +96,12 @@ disqusShortname = ""
       image = "pic02.jpg"
       url = "blogs/climate"
 
+    [[params.tiles.showcase]]
+      title = "General Social Survey"
+      subtitle = "Taking a look who use social media"
+      image = "pic01.jpg"
+      url = "blogs/gss"
+      
     [[params.tiles.showcase]]
       title = "Can yield curve inversion actually predict recessions? "
       subtitle = "Let's use data analysis to find out!"
