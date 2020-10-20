@@ -1,0 +1,76 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Brexit
+draft: false
+image: pic1.jpg
+keywords: ""
+slug: brexit
+title: 2016 Brexit Voting Data
+---
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  
+library(gapminder)  
+library(here)
+library(knitr)
+```
+
+We will have a quick look at the results of the 2016 Brexit vote in the UK. First we read the data using `read_csv()` and have a quick glimpse at the data
+
+```{r load_brexit_data, warning=FALSE, message=FALSE}
+brexit_results <- read_csv(here::here("Data","brexit_results.csv"))
+
+glimpse(brexit_results)
+```
+The data comes from [Elliott Morris](https://www.thecrosstab.com/), who cleaned it and made it available through his [DataCamp class on analysing election and polling data in R](https://www.datacamp.com/courses/analyzing-election-and-polling-data-in-r).
+
+Our main outcome variable (or y) is `leave_share`, which is the percent of votes cast in favour of Brexit, or leaving the EU. Each row is a UK [parliament constituency](https://en.wikipedia.org/wiki/United_Kingdom_Parliament_constituencies). 
+
+To get a sense of the spread of the data, plot a histogram and a density plot of the leave share in all constituencies.
+
+```{r brexit_histogram, warning=FALSE, message=FALSE}
+ggplot(brexit_results, aes(x = leave_share)) +
+  geom_histogram(binwidth = 2.5) + labs(title = "Percentage Votes in favour of Brexit", subtitle= "Leave Share in all Constituencies", x = "Leave Share", y = "UK Parliament Constituency")
+
+ggplot(brexit_results, aes(x = leave_share)) +
+  geom_density() + labs(title = "Percentage Votes in favour of Brexit", subtitle= "Leave Share in all Constituencies", x = "Leave Share", y = "UK Parliament Constituency")
+
+
+```
+
+One common explanation for the Brexit outcome was fear of immigration and opposition to the EU's more open border policy. We can check the relationship (or correlation) between the proportion of native born residents (`born_in_uk`) in a constituency and its `leave_share`. Please find the correlation between the two variables below.
+
+```{r brexit_immigration_correlation}
+brexit_results %>% 
+  select(leave_share, born_in_uk) %>% 
+  cor()
+```
+
+The correlation is almost 0.5, which shows that the two variables are positively correlated. 
+
+I also created a scatterplot between these two variables using `geom_point`. I also add the best fit line, using  `geom_smooth(method = "lm")`. 
+
+```{r brexit_immigration_plot}
+ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = "lm") +
+  theme_bw() + labs(title = "Brexit immigration Plot", subtitle = "Relationship between those born in the UK and leave share " , x = "Born in the UK", y = "Leave Share")
+```
+
+> Type your answer after, and outside, this blockquote.
+
+Research shows that constituencies with lower levels of immigration voted for Brexit. This is line with our finding in the correlation matrix and scatterplot showing that the relationship between ‘leave share’ and ‘born in the UK’ is almost positively corelated. As the proportion of native-born residents in a constituency increase, i.e the proportion of immigrants decrease, so does the proportion of those who votes for Brexit. When analysing the Labour Force Survey data and research by Ralph Fevre, data showed that on average leading ‘leave share’ constituencies have higher unemployment, lower portion of labour force in skilled labour positions and lower median earning. Therefore, although ‘one common explanation for the Brexit outcome was fear of immigration’, which could be due to limited exposure to immigrants, there could also an additional explanation. The socio-economic characteristics of the ‘leave share’ votes show that deprivation and scapegoating personal circumstances on immigrants may be another reason for the correlation.
+
+# Submit the assignment
+
+Knit the completed R Markdown file as ah HTML or Word document (use the "Knit" button at the top of the script editor window) and upload it to Canvas.
+
+
+## Details
+
+- Who I collaborated with: Leonie von Loeper, Sena Salman, Nona
+- Approximately how much time I spent on this problem set: I did the assignments at different times. In total I spent 2 hours. I to research possible reasons for what the data was showing especially with Assignment 2.
+- What, if anything, gave me the most trouble: This is the first time I have coded. I think the datacamp well prepared me for the assignment. Understanding why I was getting 'error' messages gave me trouble initially. My code seemed correct but I wasn't executing consistently.

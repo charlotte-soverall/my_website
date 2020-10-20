@@ -114,17 +114,17 @@ disqusShortname = ""
       image = "pic03.jpg"
       url = "blogs/gapminder"
       
-    [[params.tiles.showcase]]
-      title = "Brexit"
-      subtitle = "Looking at the 2016 Brexit vote" 
-      image = "pic05.jpg"
-      url = "blogs/brexit"
+       [[params.tiles.showcase]]
+         title = "Brexit"
+         subtitle = "Looking at the 2016 Brexit vote" 
+         image = "pic05.jpg"
+         url = "blogs/brexit"
 
-    [[params.tiles.showcase]]
-      title = "About me"
-      subtitle = "Getting to know me"
-      image = "pic00.jpg"
-      url = "blogs/aboutme"
+     #[[params.tiles.showcase]]
+       #title = "About me"
+       #subtitle = "Getting to know me"
+       #image = "pic00.jpg"
+       #url = "blogs/aboutme"
 
     #[[params.tiles.showcase]]
       #title = "Etiam"
