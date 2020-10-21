@@ -46,7 +46,6 @@ glimpse(approval_polllist)</code></pre>
 ## $ createddate         &lt;chr&gt; &quot;1/23/2017&quot;, &quot;1/23/2017&quot;, &quot;3/1/2017&quot;, &quot;1/24/2017&quot;…
 ## $ timestamp           &lt;chr&gt; &quot;00:45:20 27 Sep 2020&quot;, &quot;00:45:20 27 Sep 2020&quot;, &quot;…</code></pre>
 <pre class="r"><code># Use `lubridate` to fix dates, as they are given as characters.</code></pre>
-<p><img src="/Users/charlotte/Desktop/LBS/Data Analytics/my_website/images/trump_approval_margin.png" width="100%" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Clean up data just for pollster and results
 tidypolls &lt;- approval_polllist %&gt;%
   select(enddate,pollster, approve, disapprove) %&gt;%

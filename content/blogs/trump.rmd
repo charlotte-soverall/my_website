@@ -58,10 +58,6 @@ glimpse(approval_polllist)
 # Use `lubridate` to fix dates, as they are given as characters.
 ```
 
-```{r trump_margins, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "trump_approval_margin.png"), error = FALSE)
-```
-
 
 ```{r}
 
